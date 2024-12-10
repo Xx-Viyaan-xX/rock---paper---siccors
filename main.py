@@ -1,35 +1,78 @@
+import pygame
 import random
 
-def get_user_choice():
-    while True:
-        user_choice = input("Enter rock, paper, or scissors: ").lower()
-        if user_choice in ['rock', 'paper', 'scissors']:
-            return user_choice
-        else:
-            print("Invalid choice. Please enter rock, paper, or scissors.")
+# Initialize Pygame
+pygame.init()
 
-def get_computer_choice():
-    choices = ['rock', 'paper', 'scissors']
-    return random.choice(choices)
+# Constants
+WIDTH, HEIGHT = 600, 400
+FPS = 30
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+FONT_SIZE = 36
 
-def play_game():
-    print("welcome to rock, paper and scissors")
-    user_choice = get_user_choice()
-    computer_choice = get_computer_choice()
+# Set up display
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Rock Paper Scissors")
 
-    print(f"\nYou chose {user_choice}, computer chose {computer_choice}.\n")
-    result=determine_winner(user_choice,computer_choice)
-    print(result)
+# Load font
+font = pygame.font.Font(None, FONT_SIZE)
 
-def determine_winner(user_choice,computer_choice):
-    if user_choice == computer_choice:
-        return "its a tie"
-    elif (user_choice == "rock" and computer_choice == "scissors") or \
-    (user_choice == "paper" and computer_choice == "rock") or \
-    (user_choice == "scissors" and computer_choice == "paper"):
-        return "You win"
+# Choices
+choices = ["Rock", "Paper", "Scissors"]
+
+# Game function
+def get_winner(player, computer):
+    if player == computer:
+        return "It's a Tie!"
+    elif (player == "Rock" and computer == "Scissors") or \
+         (player == "Paper" and computer == "Rock") or \
+         (player == "Scissors" and computer == "Paper"):
+        return "You Win!"
     else:
-        return "computer wins"
-    
-if __name__== "__main__":
-    play_game()
+        return "You Lose!"
+
+# Main game loop
+def main():
+    running = True
+    player_choice = None
+    computer_choice = None
+    result = ""
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    player_choice = "Rock"
+                elif event.key == pygame.K_p:
+                    player_choice = "Paper"
+                elif event.key == pygame.K_s:
+                    player_choice = "Scissors"
+
+                if player_choice:
+                    computer_choice = random.choice(choices)
+                    result = get_winner(player_choice, computer_choice)
+
+        # Fill the screen with white
+        screen.fill(WHITE)
+
+        # Display the choices and result
+        if player_choice:
+            player_text = font.render(f"You chose: {player_choice}", True, BLACK)
+            computer_text = font.render(f"Computer chose: {computer_choice}", True, BLACK)
+            result_text = font.render(result, True, BLACK)
+
+            screen.blit(player_text, (50, 50))
+            screen.blit(computer_text, (50, 100))
+            screen.blit(result_text, (50, 150))
+
+        # Refresh the screen
+        pygame.display.flip()
+        pygame.time.Clock().tick(FPS)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
